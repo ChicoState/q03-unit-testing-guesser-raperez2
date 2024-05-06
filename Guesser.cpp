@@ -15,7 +15,18 @@ using std::string;
   has 100, the distance is 10.
 */
 unsigned int Guesser::distance(string guess){
-  return 0;
+  int index = guess.size();
+  int distance = 0;
+  for(int i = 0; (i < m_secrt_size-1) && (i < index-1); i++){
+    if(guess[i]!=m_secret[i]){
+      distance = distance+1;
+    }
+  }
+  distance = distance + abs(index - m_secrt_size);
+  if(distance >= m_secrt_size){
+    distance = m_secrt_size;
+  }
+  return distance;
 }
 
 /*
@@ -25,7 +36,11 @@ unsigned int Guesser::distance(string guess){
   otherwise, it will be truncated at that length.
 */
 Guesser::Guesser(string secret){
-
+  m_secret = secret;
+  m_remaining = 3;
+  m_locked = false;
+  m_match = false;
+  m_secrt_size = secret.size();
 }
 
 /*
@@ -40,7 +55,19 @@ Guesser::Guesser(string secret){
   and the secret.
 */
 bool Guesser::match(string guess){
-  return true;
+  int result = distance(guess);
+  if(!m_locked){
+    m_remaining = m_remaining -1;
+    if(result > 2 || !remaining()){
+      m_locked = true;
+    }
+    m_match = false;
+    if(!result){
+      m_match = true;
+    }
+    return m_match;
+  }
+  return m_match;
 }
 
 /*
@@ -51,6 +78,15 @@ bool Guesser::match(string guess){
   reset to three (3).
 */
 unsigned int Guesser::remaining(){
-  return 0;
+  //If they are locked don't change the number of guesses
+  if(!m_locked){
+    //If not locked then change remaining unless it is a match
+    if(m_match){
+      m_remaining = 3;
+      return m_remaining;
+    }
+    return m_remaining;
+  }
+  return m_remaining;
 }
 
